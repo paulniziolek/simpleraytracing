@@ -4,4 +4,5 @@ project(simpleraytracing)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(simpleraytracing
-        main.cpp)
+        main.cpp
+        vec3.h)
