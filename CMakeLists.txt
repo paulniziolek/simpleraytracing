@@ -12,4 +12,5 @@ add_executable(simpleraytracing
         sphere.h
         hittable_list.h
         rtweekend.h
-        interval.h)
+        interval.h
+        camera.h)
