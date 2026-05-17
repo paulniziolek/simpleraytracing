@@ -9,4 +9,5 @@ add_executable(simpleraytracing
         color.h
         ray.h
         hittable.h
-        sphere.h)
+        sphere.h
+        hittable_list.h)
