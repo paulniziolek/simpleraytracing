@@ -2,7 +2,6 @@
 #define SIMPLERAYTRACING_SPHERE_H
 
 #include "hittable.h"
-#include "vec3.h"
 
 class sphere : public hittable {
 public:

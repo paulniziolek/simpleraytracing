@@ -10,4 +10,5 @@ add_executable(simpleraytracing
         ray.h
         hittable.h
         sphere.h
-        hittable_list.h)
+        hittable_list.h
+        rtweekend.h)

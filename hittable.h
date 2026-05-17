@@ -1,8 +1,6 @@
 #ifndef SIMPLERAYTRACING_HITTABLE_H
 #define SIMPLERAYTRACING_HITTABLE_H
 
-#include "ray.h"
-
 class hit_record {
 public:
     point3 p;
