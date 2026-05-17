@@ -7,4 +7,5 @@ add_executable(simpleraytracing
         main.cpp
         vec3.h
         color.h
-        ray.h)
+        ray.h
+        hittable.h)
