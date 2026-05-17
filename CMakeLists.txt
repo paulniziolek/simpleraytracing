@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(simpleraytracing
         main.cpp
-        vec3.h)
+        vec3.h
+        color.h)
