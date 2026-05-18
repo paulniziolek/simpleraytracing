@@ -3,6 +3,8 @@ project(simpleraytracing)
 
 set(CMAKE_CXX_STANDARD 14)
 
+find_package(OpenMP REQUIRED)
+
 add_executable(simpleraytracing
         main.cpp
         vec3.h
@@ -15,3 +17,5 @@ add_executable(simpleraytracing
         interval.h
         camera.h
         material.h)
+
+target_link_libraries(simpleraytracing PUBLIC OpenMP::OpenMP_CXX)

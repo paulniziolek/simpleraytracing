@@ -5,6 +5,9 @@
 #include "material.h"
 #include "vec3.h"
 
+#include <atomic>
+#include <vector>
+
 class camera {
 public:
     double aspect_ratio = 1.0;
@@ -23,28 +26,37 @@ public:
     void render(const hittable& world) {
         initialize();
 
-        std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+        std::vector<color> framebuffer(size_t(image_width) * size_t(image_height));
+        std::atomic<int> scanlines_done(0);
 
+        #pragma omp parallel for schedule(dynamic, 1)
         for (int j = 0; j < image_height; j++) {
-            std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
             for (int i = 0; i < image_width; i++) {
+                color pixel_color(0, 0, 0);
                 // Optional: IF samples_per_pixel == 1, we don't perform any anti-aliasing.
                 if (samples_per_pixel == 1) {
                     auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
                     auto ray_direction = pixel_center - center;
                     ray r(center, ray_direction);
-
-                    color pixel_color = ray_color(r, max_depth, world);
-                    write_color(std::cout, pixel_color);
-                    continue;
+                    pixel_color = ray_color(r, max_depth, world);
+                } else {
+                    for (int sample = 0; sample < samples_per_pixel; sample++) {
+                        ray r = get_ray(i, j);
+                        pixel_color += ray_color(r, max_depth, world);
+                    }
+                    pixel_color = pixel_samples_scale * pixel_color;
                 }
+                framebuffer[size_t(j) * image_width + i] = pixel_color;
+            }
+            int done = ++scanlines_done;
+            #pragma omp critical
+            std::clog << "\rScanlines remaining: " << (image_height - done) << ' ' << std::flush;
+        }
 
-                color pixel_color(0, 0, 0);
-                for (int sample = 0; sample < samples_per_pixel; sample++) {
-                    ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, max_depth, world);
-                }
-                write_color(std::cout, pixel_samples_scale * pixel_color);
+        std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+        for (int j = 0; j < image_height; j++) {
+            for (int i = 0; i < image_width; i++) {
+                write_color(std::cout, framebuffer[size_t(j) * image_width + i]);
             }
         }
         std::clog << "\rDone.                 \n";

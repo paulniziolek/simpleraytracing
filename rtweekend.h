@@ -6,6 +6,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <random>
 
 using std::make_shared;
 using std::shared_ptr;
@@ -18,8 +19,11 @@ inline double degrees_to_radians(double degrees) {
 }
 
 inline double random_double() {
-    // Returns a random real in [0, 1).
-    return std::rand() / (RAND_MAX + 1.0);
+    // Returns a random real in [0, 1). Thread-local generator so parallel
+    // workers don't contend on a shared PRNG (glibc rand() takes a lock).
+    thread_local std::mt19937 generator(std::random_device{}());
+    thread_local std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    return distribution(generator);
 }
 
 inline double random_double(double min, double max) {
