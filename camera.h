@@ -17,6 +17,17 @@ public:
         for (int j = 0; j < image_height; j++) {
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
             for (int i = 0; i < image_width; i++) {
+                // Optional: IF samples_per_pixel == 1, we don't perform any anti-aliasing.
+                if (samples_per_pixel == 1) {
+                    auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
+                    auto ray_direction = pixel_center - center;
+                    ray r(center, ray_direction);
+
+                    color pixel_color = ray_color(r, world);
+                    write_color(std::cout, pixel_color);
+                    continue;
+                }
+
                 color pixel_color(0, 0, 0);
                 for (int sample = 0; sample < samples_per_pixel; sample++) {
                     ray r = get_ray(i, j);
